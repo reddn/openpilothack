@@ -158,7 +158,7 @@ class CarController(object):
         self.idx = 0
         self.idx_last = 0
       checksum = 512 - ((idx + little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)
-      can_sends.append(hondacan.create_steering_control(self.packer, idx, big_steer, lkas_on, little_steer, lkas_off, checksum))
+      can_sends.append(hondacan.create_steering_control_serial(self.packer, idx, big_steer, lkas_on, little_steer, lkas_off, checksum))
     else:
       idx = frame % 4
       can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
