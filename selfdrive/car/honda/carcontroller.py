@@ -63,7 +63,7 @@ class CarController(object):
     self.enable_camera = enable_camera
     self.packer = CANPacker(dbc_name)
     self.new_radar_config = False
-    self.idx_last = 0
+    self.counter_last = 0
 
   def update(self, sendcan, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
@@ -152,13 +152,13 @@ class CarController(object):
       if little_steer > 15:
         little_steer = little_steer - 32
       if self.idx_last = 0:
-        self.idx = 1
-        self.idx_last = 1
+        self.counter = 1
+        self.counter_last = 1
       else:
-        self.idx = 0
-        self.idx_last = 0
-      checksum = 512 - ((idx + little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)
-      can_sends.append(hondacan.create_steering_control_serial(self.packer, idx, big_steer, lkas_on, little_steer, lkas_off, checksum))
+        self.counter = 0
+        self.counter_last = 0
+      chksm = 512 - ((idx + little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)
+      can_sends.append(hondacan.create_steering_control_serial(self.packer, counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
     else:
       idx = frame % 4
       can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
