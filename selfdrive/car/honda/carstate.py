@@ -55,6 +55,9 @@ def get_can_signals(CP):
       ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
       ("ACC_STATUS", "POWERTRAIN_DATA", 0),
+      ("XMISSION_SPEED", "POWERTRAIN_DATA", 0),
+      ("XMISSION_SPEED", "POWERTRAIN_DATA_2", 0),
+      ("CAR_GAS", "GAS_PEDAL", 0),
   ]
 
   checks = [
@@ -67,8 +70,10 @@ def get_can_signals(CP):
       ("SEATBELT_STATUS", 10),
       ("CRUISE", 10),
       ("POWERTRAIN_DATA", 100),
+      ("POWERTRAIN_DATA_2", 100),
       ("VSA_STATUS", 50),
       ("SCM_BUTTONS", 25),
+      ("CAR_GAS", 100),
   ]
 
   if CP.radarOffCan:
@@ -106,7 +111,7 @@ def get_can_signals(CP):
   elif CP.carFingerprint == CAR.ACURA_ILX:
     signals += [("CAR_GAS", "GAS_PEDAL_2", 0),
                 ("MAIN_ON", "SCM_BUTTONS", 0)]
-  elif CP.carFingerprint in (CAR.CRV, CAR.ACURA_RDX, CAR.PILOT_2019, CAR.RIDGELINE):
+  elif CP.carFingerprint in (CAR.CRV, CAR.ACURA_RDX, CAR.PILOT_2019, CAR.RIDGELINE, CAR.ACCORD_2016):
     signals += [("MAIN_ON", "SCM_BUTTONS", 0)]
   elif CP.carFingerprint == CAR.ODYSSEY:
     signals += [("MAIN_ON", "SCM_FEEDBACK", 0),
@@ -190,11 +195,18 @@ class CarState(object):
 
     # 2 = temporary; 3 = TBD; 4 = temporary, hit a bump; 5 = (permanent); 6 = temporary; 7 = (permanent)
     # TODO: Use values from DBC to parse this field
-    self.steer_error = cp.vl["STEER_STATUS"]['STEER_STATUS'] not in [0, 2, 3, 4, 6]
-    self.steer_not_allowed = cp.vl["STEER_STATUS"]['STEER_STATUS'] != 0
-    self.steer_warning = cp.vl["STEER_STATUS"]['STEER_STATUS'] not in [0, 3]   # 3 is low speed lockout, not worth a warning
-    self.brake_error = cp.vl["STANDSTILL"]['BRAKE_ERROR_1'] or cp.vl["STANDSTILL"]['BRAKE_ERROR_2']
-    self.esp_disabled = cp.vl["VSA_STATUS"]['ESP_DISABLED']
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      self.steer_error = 0
+      self.steer_not_allowed = 0
+      self.steer_warning = 0
+      self.brake_error = cp.vl["STANDSTILL"]['BRAKE_ERROR_1'] or cp.vl["STANDSTILL"]['BRAKE_ERROR_2']
+      self.esp_disabled = cp.vl["VSA_STATUS"]['ESP_DISABLED']
+    else:
+      self.steer_error = cp.vl["STEER_STATUS"]['STEER_STATUS'] not in [0, 2, 3, 4, 6]
+      self.steer_not_allowed = cp.vl["STEER_STATUS"]['STEER_STATUS'] != 0
+      self.steer_warning = cp.vl["STEER_STATUS"]['STEER_STATUS'] not in [0, 3]   # 3 is low speed lockout, not worth a warning
+      self.brake_error = cp.vl["STANDSTILL"]['BRAKE_ERROR_1'] or cp.vl["STANDSTILL"]['BRAKE_ERROR_2']
+      self.esp_disabled = cp.vl["VSA_STATUS"]['ESP_DISABLED']
 
     # calc best v_ego estimate, by averaging two opposite corners
     speed_factor = SPEED_FACTOR[self.CP.carFingerprint]
@@ -206,8 +218,12 @@ class CarState(object):
 
     # blend in transmission speed at low speed, since it has more low speed accuracy
     self.v_weight = interp(self.v_wheel, v_weight_bp, v_weight_v)
-    speed = (1. - self.v_weight) * cp.vl["ENGINE_DATA"]['XMISSION_SPEED'] * CV.KPH_TO_MS * speed_factor + \
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      speed = (1. - self.v_weight) * cp.vl["POWERTRAIN_DATA_2"]['XMISSION_SPEED'] * CV.KPH_TO_MS * speed_factor + \
       self.v_weight * self.v_wheel
+    else:
+      speed = (1. - self.v_weight) * cp.vl["ENGINE_DATA"]['XMISSION_SPEED'] * CV.KPH_TO_MS * speed_factor + \
+        self.v_weight * self.v_wheel
 
     if abs(speed - self.v_ego) > 2.0:  # Prevent large accelerations when car starts at non zero speed
       self.v_ego_x = [[speed], [0.0]]
@@ -230,9 +246,14 @@ class CarState(object):
     self.cruise_setting = cp.vl["SCM_BUTTONS"]['CRUISE_SETTING']
     self.cruise_buttons = cp.vl["SCM_BUTTONS"]['CRUISE_BUTTONS']
 
-    self.blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER'] or cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
-    self.left_blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER']
-    self.right_blinker_on = cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      self.blinker_on = 0
+      self.left_blinker_on = 0
+      self.right_blinker_on = 0
+    else:
+      self.blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER'] or cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
+      self.left_blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER']
+      self.right_blinker_on = cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
 
     if self.CP.carFingerprint in (CAR.CIVIC, CAR.ODYSSEY, CAR.CRV_5G, CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_HATCH):
       self.park_brake = cp.vl["EPB_STATUS"]['EPB_STATE'] != 0
@@ -252,8 +273,11 @@ class CarState(object):
       self.car_gas = self.pedal_gas
     else:
       self.car_gas = cp.vl["GAS_PEDAL_2"]['CAR_GAS']
-
-    self.steer_torque_driver = cp.vl["STEER_STATUS"]['STEER_TORQUE_SENSOR']
+      
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      self.steer_torque_driver = 0
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      self.steer_torque_driver = cp.vl["STEER_STATUS"]['STEER_TORQUE_SENSOR']
     self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD[self.CP.carFingerprint]
 
     self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
@@ -286,8 +310,11 @@ class CarState(object):
       self.brake_switch_ts = cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH']
 
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
-    self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
-    self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      self.pcm_acc_status = 1
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
+      self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
 
 
 # carstate standalone tester
