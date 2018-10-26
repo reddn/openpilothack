@@ -173,6 +173,8 @@ class CarInterface(object):
 
     ret.steerKf = 0.00006 # conservative feed-forward
 
+    ret.steerControlType = car.CarParams.SteerControlType.torque
+
     if candidate == CAR.CIVIC:
       stop_and_go = True
       ret.mass = mass_civic
@@ -207,6 +209,19 @@ class CarInterface(object):
       stop_and_go = True
       if not candidate == CAR.ACCORDH: # Hybrid uses same brake msg as hatch
         ret.safetyParam = 1 # Accord and CRV 5G use an alternate user brake msg
+      ret.mass = 3279. * CV.LB_TO_KG + std_cargo
+      ret.wheelbase = 2.83
+      ret.centerToFront = ret.wheelbase * 0.39
+      ret.steerRatio = 15.96  # 11.82 is spec end-to-end
+      tire_stiffness_factor = 0.8467
+      ret.steerKpV, ret.steerKiV = [[0.6], [0.18]]
+      ret.longitudinalKpBP = [0., 5., 35.]
+      ret.longitudinalKpV = [1.2, 0.8, 0.5]
+      ret.longitudinalKiBP = [0., 35.]
+      ret.longitudinalKiV = [0.18, 0.12]
+
+    elif candidate in (CAR.ACCORD_10`6):
+      stop_and_go = True
       ret.mass = 3279. * CV.LB_TO_KG + std_cargo
       ret.wheelbase = 2.83
       ret.centerToFront = ret.wheelbase * 0.39
@@ -316,8 +331,6 @@ class CarInterface(object):
 
     else:
       raise ValueError("unsupported car %s" % candidate)
-
-    ret.steerControlType = car.CarParams.SteerControlType.torque
 
     # min speed to enable ACC. if car can do stop and go, then set enabling speed
     # to a negative value, so it won't matter. Otherwise, add 0.5 mph margin to not
