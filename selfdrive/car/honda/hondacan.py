@@ -71,7 +71,7 @@ def create_steering_control_serial(packer, counter, big_steer, lkas_on, little_s
       "SET_1": 1,
       "LKAS_OFF": lkas_off,
       "SET_1_1": 1,
-      "CHECKSUM": chksm,
+      "FLIP": chksm,
     }
   return packer.make_can_msg("LKAS_SERIAL", 2, values)
 
