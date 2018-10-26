@@ -62,6 +62,18 @@ def create_gas_command(packer, gas_amount, idx):
 
   return packer.make_can_msg("GAS_COMMAND", 0, values, idx)
 
+def create_steering_control_serial(packer, idx, big_steer, lkas_on, little_steer, lkas_off, checksum):
+    values = {
+      "BIG_STEER": big_steer,
+      "COUNTER": idx,
+      "LITTLE_STEER": little_steer,
+      "LKAS_ON": lkas_on,
+      "SET_1": 1,
+      "LKAS_OFF": lkas_off,
+      "SET_1_1": 1,
+      "CHECKSUM": checksum,
+    }
+  return packer.make_can_msg("LKAS_SERIAL", 2, values)
 
 def create_steering_control(packer, apply_steer, lkas_active, car_fingerprint, idx):
   """Creates a CAN message for the Honda DBC STEERING_CONTROL."""
