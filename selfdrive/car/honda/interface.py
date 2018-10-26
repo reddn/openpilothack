@@ -220,7 +220,7 @@ class CarInterface(object):
       ret.longitudinalKiBP = [0., 35.]
       ret.longitudinalKiV = [0.18, 0.12]
 
-    elif candidate in (CAR.ACCORD_10`6):
+    elif candidate in (CAR.ACCORD_2016):
       stop_and_go = True
       ret.mass = 3279. * CV.LB_TO_KG + std_cargo
       ret.wheelbase = 2.83
