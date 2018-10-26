@@ -149,9 +149,11 @@ class CarController(object):
         chksm_off = 64
       big_steer = (apply_steer >> 5) & 0xF
       little_steer =  apply_steer - (big_steer << 5)
+      # steer starts from 0, goes to 15, drops to -16 then up to -1
       if little_steer > 15:
         little_steer = little_steer - 32
-      if self.idx_last = 0:
+      # accord serial has a 1 bit counter, flipping every refresh
+      if self.counter_last = 0:
         self.counter = 1
         self.counter_last = 1
       else:
