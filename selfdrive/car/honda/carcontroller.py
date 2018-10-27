@@ -153,7 +153,7 @@ class CarController(object):
       if little_steer > 15:
         little_steer = little_steer - 32
       # accord serial has a 1 bit counter, flipping every refresh
-      if self.counter_last = 0:
+      if self.counter_last == 0:
         self.counter = 1
         self.counter_last = 1
       else:
