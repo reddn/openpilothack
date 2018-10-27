@@ -63,15 +63,15 @@ def create_gas_command(packer, gas_amount, idx):
   return packer.make_can_msg("GAS_COMMAND", 0, values, idx)
 
 def create_steering_control_serial(packer, counter, big_steer, lkas_on, little_steer, lkas_off, chksm):
-    values = {
-      "BIG_STEER": big_steer,
-      "COUNTER": counter,
-      "LITTLE_STEER": little_steer,
-      "LKAS_ON": lkas_on,
-      "SET_1": 1,
-      "LKAS_OFF": lkas_off,
-      "SET_1_1": 1,
-      "FLIP": chksm,
+  values = {
+    "BIG_STEER": big_steer,
+    "COUNTER": counter,
+    "LITTLE_STEER": little_steer,
+    "LKAS_ON": lkas_on,
+    "SET_1": 1,
+    "LKAS_OFF": lkas_off,
+    "SET_1_1": 1,
+    "FLIP": chksm,
     }
   return packer.make_can_msg("LKAS_SERIAL", 2, values)
 
