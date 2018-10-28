@@ -313,11 +313,11 @@ class CarState(object):
       self.brake_switch_ts = cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH']
 
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
+    self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
       self.pcm_acc_status = 1
-    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+    else:
       self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
-      self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
 
 
 # carstate standalone tester
