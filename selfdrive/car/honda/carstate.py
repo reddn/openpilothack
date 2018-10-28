@@ -264,8 +264,11 @@ class CarState(object):
       self.brake_hold = 0  # TODO
       self.main_on = cp.vl["SCM_BUTTONS"]['MAIN_ON']
 
-    can_gear_shifter = int(cp.vl["GEARBOX"]['GEAR_SHIFTER'])
-    self.gear_shifter = parse_gear_shifter(can_gear_shifter, self.shifter_values)
+    if self.CP.carFingerprint in (CAR.ACCORD_2016):
+      self.gear_shifter = "drive"
+    else:
+      can_gear_shifter = int(cp.vl["GEARBOX"]['GEAR_SHIFTER'])
+      self.gear_shifter = parse_gear_shifter(can_gear_shifter, self.shifter_values)
 
     self.pedal_gas = cp.vl["POWERTRAIN_DATA"]['PEDAL_GAS']
     # crv doesn't include cruise control
