@@ -156,6 +156,7 @@ SPEED_FACTOR = {
 # This message sends car info to the radar that is specific to the model. You
 # can determine this message by monitoring the OEM system.
 VEHICLE_STATE_MSG = {
+  CAR.ACCORD_2016: "\x0e\xd8\x52\x22\x56\x00\x00",
   CAR.ACURA_ILX: "\x0f\x18\x51\x02\x5a\x00\x00",
   CAR.ACURA_RDX: "\x0f\x57\x4f\x02\x5a\x00\x00",
   CAR.CIVIC: "\x02\x38\x44\x32\x4f\x00\x00",
