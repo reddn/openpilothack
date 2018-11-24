@@ -29,7 +29,6 @@ def calc_cruise_offset(offset, speed):
 def get_can_signals(CP):
 # this function generates lists for signal, messages and initial values
   signals = [
-      ("XMISSION_SPEED", "ENGINE_DATA", 0),
       ("WHEEL_SPEED_FL", "WHEEL_SPEEDS", 0),
       ("WHEEL_SPEED_FR", "WHEEL_SPEEDS", 0),
       ("WHEEL_SPEED_RL", "WHEEL_SPEEDS", 0),
