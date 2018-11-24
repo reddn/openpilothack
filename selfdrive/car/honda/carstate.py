@@ -35,9 +35,11 @@ def get_can_signals(CP):
       ("WHEEL_SPEED_RR", "WHEEL_SPEEDS", 0),
       ("STEER_ANGLE", "STEERING_SENSORS", 0),
       ("STEER_ANGLE_RATE", "STEERING_SENSORS", 0),
-      ("STEER_TORQUE_SENSOR", "STEER_STATUS", 0),
-      ("LEFT_BLINKER", "SCM_FEEDBACK", 0),
-      ("RIGHT_BLINKER", "SCM_FEEDBACK", 0),
+      # ("STEER_TORQUE_SENSOR", "STEER_STATUS", 0)
+      # ("LEFT_BLINKER", "SCM_FEEDBACK", 0),
+      # ("RIGHT_BLINKER", "SCM_FEEDBACK", 0),
+      ("LEFT_BLINKER", "SCM_COMMANDS", 0),
+      ("RIGHT_BLINKER", "SCM_COMMANDS", 0),
       ("GEAR", "GEARBOX", 0),
       ("BRAKE_ERROR_1", "STANDSTILL", 1),
       ("BRAKE_ERROR_2", "STANDSTILL", 1),
@@ -275,7 +277,7 @@ class CarState(object):
       self.car_gas = self.pedal_gas
     else:
       self.car_gas = cp.vl["GAS_PEDAL_2"]['CAR_GAS']
-      
+
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
       self.steer_torque_driver = 0
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
