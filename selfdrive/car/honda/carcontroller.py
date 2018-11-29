@@ -137,23 +137,23 @@ class CarController(object):
 
     # Send steering command.
     if CS.CP.carFingerprint in (CAR.ACCORD_2016):
-        if lkas_active:
-            chksm_on = 32
-            lkas_on = 1
-            lkas_off = 0
-            chksm_off = 0
-            big_steer = (apply_steer >> 5) & 0xF
-            little_steer =  apply_steer - (big_steer << 5)
-            # steer starts from 0, goes to 15, drops to -16 then up to -1
-            if little_steer > 15:
-            little_steer = little_steer - 32
-        else:
-            chksm_on = 0
-            lkas_on = 0
-            lkas_off = 1
-            chksm_off = 64
-            big_steer = 0
-            little_steer = 0
+      if lkas_active:
+        chksm_on = 32
+        lkas_on = 1
+        lkas_off = 0
+        chksm_off = 0
+        big_steer = (apply_steer >> 5) & 0xF
+        little_steer =  apply_steer - (big_steer << 5)
+        # steer starts from 0, goes to 15, drops to -16 then up to -1
+        if little_steer > 15:
+          little_steer = little_steer - 32
+      else:
+        chksm_on = 0
+        lkas_on = 0
+        lkas_off = 1
+        chksm_off = 64
+        big_steer = 0
+        little_steer = 0
       # if apply_steer != 0:#fix this... if no apply_steer but still engaged, it needs to keep lkas_on as 1
       #   chksm_on = 32
       #   lkas_on = 1
