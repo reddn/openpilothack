@@ -1,0 +1,7 @@
+MAIN button = CRUISE_BUTTONS = 1  [0 0 1]
+Res (+)  = CRUISE_BUTTONS = 4 [1 0 0]
+Set (-)  = CRUISE_BUTTONS = 3 [0 1 1]
+Cancel = CRUISE_BUTTONS = 2 [0 1 0]
+
+ACC Distance button  = CRUISE_SETTING  = 3 [1 1]
+LKAS Button = CRUISE_SETTING =  1 [0 1]

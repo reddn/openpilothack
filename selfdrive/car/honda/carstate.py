@@ -55,7 +55,7 @@ def get_can_signals(CP):
       ("GEAR_SHIFTER", "GEARBOX", 0),
       ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
-      ("ACC_STATUS", "POWERTRAIN_DATA", 0),
+      # ("ACC_STATUS", "POWERTRAIN_DATA", 0),
       ("XMISSION_SPEED", "POWERTRAIN_DATA", 0),
       ("XMISSION_SPEED", "POWERTRAIN_DATA_2", 0),
       ("CAR_GAS", "GAS_PEDAL", 0),
@@ -65,7 +65,7 @@ def get_can_signals(CP):
       ("ENGINE_DATA", 100),
       ("WHEEL_SPEEDS", 50),
       ("STEERING_SENSORS", 100),
-      ("SCM_FEEDBACK", 10),
+    #  ("SCM_FEEDBACK", 10),
       ("GEARBOX", 100),
       ("STANDSTILL", 50),
       ("SEATBELT_STATUS", 10),
@@ -252,9 +252,9 @@ class CarState(object):
       self.left_blinker_on = 0
       self.right_blinker_on = 0
     else:
-      self.blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER'] or cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
-      self.left_blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER']
-      self.right_blinker_on = cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
+      self.blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER'] or cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
+      self.left_blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER']
+      self.right_blinker_on = cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
 
     if self.CP.carFingerprint in (CAR.CIVIC, CAR.ODYSSEY, CAR.CRV_5G, CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_HATCH):
       self.park_brake = cp.vl["EPB_STATUS"]['EPB_STATE'] != 0
@@ -280,9 +280,10 @@ class CarState(object):
 
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
       self.steer_torque_driver = 0
-    if self.CP.carFingerprint in (CAR.ACCORD_2016):
-      self.steer_torque_driver = cp.vl["STEER_STATUS"]['STEER_TORQUE_SENSOR']
-    self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD[self.CP.carFingerprint]
+      self.steer_override = 0
+    # if self.CP.carFingerprint in (CAR.ACCORD_2016):
+    #   self.steer_torque_driver = cp.vl["STEER_STATUS"]['STEER_TORQUE_SENSOR']
+    # self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD[self.CP.carFingerprint]
 
     self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
 
