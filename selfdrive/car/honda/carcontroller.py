@@ -172,9 +172,11 @@ class CarController(object):
       else:
         self.counter = 0
         self.counter_last = 0
-      chksm = 512 - ((idx + little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)
+
+      chksm = 512 - ((little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)#removed idx from addition  list
       can_sends.append(hondacan.create_steering_control_serial(self.packer, counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
     else:
+
       idx = frame % 4
       can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
 
@@ -207,7 +209,7 @@ class CarController(object):
       else:
         radar_send_step = 5
 
-      if (frame % radar_send_step) == 0:
+      if (frame % radar_send_step) == 0 and CS.CP.carFingerprint != CAR.ACCORD_2016:
         idx = (frame/radar_send_step) % 4
         if not self.new_radar_config:  # only change state once
           self.new_radar_config = car.RadarState.Error.wrongConfig in radar_error
