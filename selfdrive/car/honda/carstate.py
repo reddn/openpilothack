@@ -51,7 +51,7 @@ def get_can_signals(CP):
       ("ESP_DISABLED", "VSA_STATUS", 1),
       ("HUD_LEAD", "ACC_HUD", 0),
       ("USER_BRAKE", "VSA_STATUS", 0),
-      ("STEER_STATUS", "STEER_STATUS", 5),
+      # ("STEER_STATUS", "STEER_STATUS", 5),
       ("GEAR_SHIFTER", "GEARBOX", 0),
       ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
@@ -62,7 +62,7 @@ def get_can_signals(CP):
   ]
 
   checks = [
-      ("ENGINE_DATA", 100),
+      # ("ENGINE_DATA", 100),
       ("WHEEL_SPEEDS", 50),
       ("STEERING_SENSORS", 100),
     #  ("SCM_FEEDBACK", 10),
@@ -74,7 +74,7 @@ def get_can_signals(CP):
       ("POWERTRAIN_DATA_2", 100),
       ("VSA_STATUS", 50),
       ("SCM_BUTTONS", 25),
-      ("CAR_GAS", 100),
+      # ("CAR_GAS", 100),
   ]
 
   if CP.radarOffCan:
