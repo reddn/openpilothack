@@ -1,0 +1,13 @@
+undefined signal BRAKE_PUMP_REQUEST - 506
+
+COUNTER signal type not valid
+
+CHECKSUM signal type not valid
+
+undefined signal SET_ME_X03 - 780
+
+undefined signal SET_ME_X01 - 780
+
+undefined signal SET_ME_X03_2 - 780
+
+undefined signal SET_ME_X41 - 829
