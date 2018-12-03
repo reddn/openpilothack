@@ -1,13 +1,14 @@
-undefined signal BRAKE_PUMP_REQUEST - 506
+undefined signal BRAKE_PUMP_REQUEST - 506  commented out.. dbc does not have a pump request, only computer brake request.
+    side note: COMPUTER_BRAKE_REQUEST_2 stays on longer than COMPUTER_BRAKE_REQUEST, I think 2 is a engine braking request by raising engine rpm via transmission
 
-COUNTER signal type not valid
+COUNTER signal type not valid    should have been fixed by changed dbc and interface.. not sure if fixed
 
-CHECKSUM signal type not valid
+CHECKSUM signal type not valid   should have been fixed by changed dbc and interface.. not sure if fixed
 
-undefined signal SET_ME_X03 - 780
+undefined signal SET_ME_X03 - 780  commented out
 
-undefined signal SET_ME_X01 - 780
+undefined signal SET_ME_X01 - 780   commented out
 
-undefined signal SET_ME_X03_2 - 780
+undefined signal SET_ME_X03_2 - 780   commented out
 
-undefined signal SET_ME_X41 - 829
+undefined signal SET_ME_X41 - 829   commented out

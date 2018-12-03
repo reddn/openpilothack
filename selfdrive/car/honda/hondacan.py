@@ -37,7 +37,7 @@ def create_brake_command(packer, apply_brake, pcm_override, pcm_cancel_cmd, chim
 
   values = {
     "COMPUTER_BRAKE": apply_brake,
-    "BRAKE_PUMP_REQUEST": pump_on,
+    # "BRAKE_PUMP_REQUEST": pump_on,
     "CRUISE_OVERRIDE": pcm_override,
     "CRUISE_FAULT_CMD": pcm_fault_cmd,
     "CRUISE_CANCEL_CMD": pcm_cancel_cmd,
@@ -101,14 +101,14 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
       'CRUISE_SPEED': hud.v_cruise,
       'ENABLE_MINI_CAR': hud.mini_car,
       'HUD_LEAD': hud.car,
-      'SET_ME_X03': 0x03,
-      'SET_ME_X03_2': 0x03,
-      'SET_ME_X01': 0x01,
+      # 'SET_ME_X03': 0x03,
+      # 'SET_ME_X03_2': 0x03,
+      # 'SET_ME_X01': 0x01,
     }
     commands.append(packer.make_can_msg("ACC_HUD", 0, acc_hud_values, idx))
 
   lkas_hud_values = {
-    'SET_ME_X41': 0x41,
+    # 'SET_ME_X41': 0x41,
     'SET_ME_X48': 0x48,
     'STEERING_REQUIRED': hud.steer_required,
     'SOLID_LANES': hud.lanes,

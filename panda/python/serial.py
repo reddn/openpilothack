@@ -1,9 +1,9 @@
 # mimic a python serial port
 class PandaSerial(object):
-  def __init__(self, panda, port, baud):
+  def __init__(self, panda, port, baud, parity = 0):
     self.panda = panda
     self.port = port
-    self.panda.set_uart_parity(self.port, 0)
+    self.panda.set_uart_parity(self.port, parity)
     self.panda.set_uart_baud(self.port, baud)
     self.buf = ""
 
@@ -23,5 +23,3 @@ class PandaSerial(object):
 
   def close(self):
     pass
-
-
