@@ -67,6 +67,7 @@ class CarController(object):
     self.lincontext = zmq.Context()
     self.linsocket = context.socket(zmq.PUB)
     self.linsocket.bind("tcp://127.0.0.1:8099")
+    self.linsocket.send([0xFF,0xFF,0xFF,0xFF], 4) #initializes the LIN pin at 9600 with even parity 
 
   def update(self, sendcan, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
