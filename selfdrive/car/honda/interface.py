@@ -422,7 +422,7 @@ class CarInterface(object):
     ret.gearShifter = self.CS.gear_shifter
 
     ret.steeringTorque = 0 #ret.steeringTorque = self.CS.steer_torque_driver
-    ret.steeringPressed = 0 #ret.steeringPressed = self.CS.steer_override
+    ret.steeringPressed = False #ret.steeringPressed = self.CS.steer_override
 
     # cruise state
     ret.cruiseState.enabled = self.CS.pcm_acc_status != 0
