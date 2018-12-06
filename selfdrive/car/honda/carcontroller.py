@@ -67,7 +67,7 @@ class CarController(object):
     self.lincontext = zmq.Context()
     self.linsocket = context.socket(zmq.PUB)
     self.linsocket.bind("tcp://127.0.0.1:8099")
-    self.linsocket.send([0xFF,0xFF,0xFF,0xFF], 4) #initializes the LIN pin at 9600 with even parity 
+    self.linsocket.send([0xFF,0xFF,0xFF,0xFF]) #initializes the LIN pin at 9600 with even parity
 
   def update(self, sendcan, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
@@ -177,7 +177,7 @@ class CarController(object):
 
       chksm = 512 - ((little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)#removed idx from addition  list
       #can_sends.append(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
-      self.linsocket.send(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm),4)
+      self.linsocket.send(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
     else:
       idx = frame % 4
       can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
