@@ -211,7 +211,7 @@ class CarController(object):
       else:
         radar_send_step = 5
 
-      if (frame % radar_send_step) == 0 and CS.CP.carFingerprint != CAR.ACCORD_2016: #radarmod
+      if (frame % radar_send_step) == 0:  #removed radarmod
         idx = (frame/radar_send_step) % 4
         if not self.new_radar_config:  # only change state once
           self.new_radar_config = car.RadarState.Error.wrongConfig in radar_error
