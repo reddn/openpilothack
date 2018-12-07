@@ -6,6 +6,8 @@ from common.numpy_fast import clip
 from selfdrive.car.honda import hondacan
 from selfdrive.car.honda.values import AH, CruiseButtons, CAR
 from selfdrive.can.packer import CANPacker
+import zmq
+
 
 def actuator_hystereses(brake, braking, brake_steady, v_ego, car_fingerprint):
   # hyst params... TODO: move these to VehicleParams
@@ -65,7 +67,7 @@ class CarController(object):
     self.new_radar_config = False
     self.counter_last = 0
     self.lincontext = zmq.Context()
-    self.linsocket = context.socket(zmq.PUB)
+    self.linsocket = self.lincontext.socket(zmq.PUB)
     self.linsocket.bind("tcp://127.0.0.1:8099")
     self.linsocket.send([0xFF,0xFF,0xFF,0xFF]) #initializes the LIN pin at 9600 with even parity
 
