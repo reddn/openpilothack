@@ -63,7 +63,7 @@ def create_gas_command(packer, gas_amount, idx):
   return packer.make_can_msg("GAS_COMMAND", 0, values, idx)
 
 def create_steering_control_serial(counter, big_steer, lkas_on, little_steer, lkas_off, chksm):
-  datapack[] = [0x00, 0x00, 0x00, 0x00]
+  datapack = [0x00, 0x00, 0x00, 0x00]
 # 128  64  32  16  8  4  2  1
   datapack[0] = big_steer
   datapack[0] =+ counter * 32
