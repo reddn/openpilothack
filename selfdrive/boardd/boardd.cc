@@ -62,6 +62,8 @@ bool pigeon_needs_init;
 
 void pigeon_init();
 void *pigeon_thread(void *crap);
+void lin_send(void *s);
+void *lin_send_thread(void *crap);
 
 void *safety_setter_thread(void *s) {
   char *value;
@@ -475,20 +477,21 @@ void *lin_send_thread(void *crap){
 void lin_send(void *s) {
 
   int err;
-  uint8_t localdata[0x04];
+  uint32_t *localdataptr;
+  uint8_t  localdata[0x04];
+  localdataptr = &localdata[0];
 
   zmq_msg_t msg;
   zmq_msg_init(&msg);
   err = zmq_msg_recv(&msg, s, 0);
   assert(err >= 0);  //need to send the data  ,, set baud and parity
   int sent;
-  int err;
-  memcpy(zmq_msg_data(&msg),(uint8_t)&localdata,4);
+  memcpy(zmq_msg_data(&msg),&localdata[0],4);
   zmq_msg_close(&msg);
 
   if(localdata[0] != 0xFF){
-    pthread_mutex_lock(&usb_lock
-    err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)send, msg_count*0x10, &sent, TIMEOUT);
+    pthread_mutex_lock(&usb_lock);
+    err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)localdataptr, 4, &sent, TIMEOUT);
     pthread_mutex_unlock(&usb_lock);
   } else {
     if(localdata[1] == 0xFF && localdata[2] == 0xFF & localdata[3] == 0xFF ) lin_send_baud_and_parity();
