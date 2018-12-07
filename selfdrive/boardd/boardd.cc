@@ -64,6 +64,7 @@ void pigeon_init();
 void *pigeon_thread(void *crap);
 void lin_send(void *s);
 void *lin_send_thread(void *crap);
+void lin_send_baud_and_parity();
 
 void *safety_setter_thread(void *s) {
   char *value;
@@ -491,7 +492,7 @@ void lin_send(void *s) {
 
   if(localdata[0] != 0xFF){
     pthread_mutex_lock(&usb_lock);
-    err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)localdataptr, 4, &sent, TIMEOUT);
+    err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)&localdata[0], 4, &sent, TIMEOUT);
     pthread_mutex_unlock(&usb_lock);
   } else {
     if(localdata[1] == 0xFF && localdata[2] == 0xFF & localdata[3] == 0xFF ) lin_send_baud_and_parity();
