@@ -107,7 +107,7 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
     bus = 2
   else:
     acc_hud_values = {
-      'PCM_SPEED': pcm_speed * CV.MS_TO_KPH,
+      'PCM_SPEED': pcm_speed * CV.MS_TO_MPH,
       'PCM_GAS': hud.pcm_accel,
       'CRUISE_SPEED': hud.v_cruise,
       'ENABLE_MINI_CAR': hud.mini_car,
@@ -120,7 +120,7 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
 
   lkas_hud_values = {
     # 'SET_ME_X41': 0x41,
-    'SET_ME_X48': 0x48,
+    #'SET_ME_X48': 0x48,
     'STEERING_REQUIRED': hud.steer_required,
     'SOLID_LANES': hud.lanes,
     'BEEP': hud.beep,
@@ -157,7 +157,7 @@ def create_radar_commands(v_ego, car_fingerprint, new_radar_config, idx):
     idx_0x300 += idx_offset
 
   if car_fingerprint == CAR.ACCORD_2016:
-    msg_0x301 += 0xc
+    msg_0x301 += "\x0c" #error here
 
   commands.append(make_can_msg(0x300, msg_0x300, idx_0x300, 1))
   commands.append(make_can_msg(0x301, msg_0x301, idx_0x301, 1))

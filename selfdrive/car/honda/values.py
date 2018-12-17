@@ -165,6 +165,7 @@ VEHICLE_STATE_MSG = {
   CAR.PILOT: "\x00\x00\x56\x02\x58\x00\x00",
   CAR.PILOT_2019: "\x00\x00\x58\x02\x5c\x00\x00",
   CAR.RIDGELINE: "\x00\x00\x56\x02\x57\x00\x00",
+  
 }
 
 # TODO: get these from dbc file
