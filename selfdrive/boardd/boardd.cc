@@ -511,8 +511,8 @@ void lin_send(void *s) {
 void lin_send_baud_and_parity(){
   int err;
   pthread_mutex_lock(&usb_lock);
-  err = libusb_control_transfer(dev_handle, 0xc0, 0xe2, 1, 0, NULL, 0, TIMEOUT);
-  err = libusb_control_transfer(dev_handle, 0xc0, 0xe4, 1, 0x20, NULL, 0, TIMEOUT);//0x20 = 9600bps / 300
+  err = libusb_control_transfer(dev_handle, 0xc0, 0xe2, 2, 0, NULL, 0, TIMEOUT);  //5th field... 1 == even parity.
+  err = libusb_control_transfer(dev_handle, 0xc0, 0xe4, 2, 0x20, NULL, 0, TIMEOUT);//0x20 = 9600bps / 300
   pthread_mutex_unlock(&usb_lock);
 }
 
@@ -554,7 +554,7 @@ void pigeon_set_power(int power) {
 void pigeon_set_baud(int baud) {
   int err;
   pthread_mutex_lock(&usb_lock);
-  err = libusb_control_transfer(dev_handle, 0xc0, 0xe2, 1, 1, NULL, 0, TIMEOUT); //5th field... 1 == even parity.
+  err = libusb_control_transfer(dev_handle, 0xc0, 0xe2, 1, 0, NULL, 0, TIMEOUT);
   if (err < 0) { handle_usb_issue(err, __func__); }
   err = libusb_control_transfer(dev_handle, 0xc0, 0xe4, 1, baud/300, NULL, 0, TIMEOUT);
   if (err < 0) { handle_usb_issue(err, __func__); }
