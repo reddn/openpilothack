@@ -218,6 +218,6 @@ class CarController(object):
         idx = (frame/radar_send_step) % 4
         if not self.new_radar_config:  # only change state once
           self.new_radar_config = car.RadarState.Error.wrongConfig in radar_error
-        can_sends.extend(hondacan.create_radar_commands(CS.v_ego, CS.CP.carFingerprint, self.new_radar_config, idx))
+        can_sends.extend(hondacan.create_radar_commands(self.packer, CS.v_ego, CS.CP.carFingerprint, self.new_radar_config, idx))
 
     sendcan.send(can_list_to_can_capnp(can_sends, msgtype='sendcan').to_bytes())
