@@ -182,7 +182,8 @@ class CarController(object):
       self.linsocket.send(bytearray(hondacan.create_steering_control_serial(self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm)))
     else:
       idx = frame % 4
-      can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
+      #can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
+      #above is commented bc it should not happen on this branch
 
     # Send dashboard UI commands.
     if (frame % 10) == 0:
