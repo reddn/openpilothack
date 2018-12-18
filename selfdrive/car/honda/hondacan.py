@@ -140,32 +140,25 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
   return commands
 
 
-def create_radar_commands(v_ego, car_fingerprint, new_radar_config, idx):
+def create_radar_commands(packer,v_ego, car_fingerprint, new_radar_config, idx):
   """Creates an iterable of CAN messages for the radar system."""
   commands = []
   v_ego_kph = np.clip(int(round(v_ego * CV.MS_TO_KPH)), 0, 255)
   speed = struct.pack('!B', v_ego_kph)
 
-  msg_0x300 = ("\xf9" + speed + "\x8a\xd0" +
-               ("\x20" if idx == 0 or idx == 3 else "\x00") +
-               "\x00\x00")
-  msg_0x301 = VEHICLE_STATE_MSG[car_fingerprint]
+  x300_values = {
+    'SET_ME_XF9': 0xf9,
+    'VEHICLE_SPEED': v_ego_kph,
+  }
+  x301_values = {
+    'SET_ME_0F18510': 0x0F18510,
+    'SET_ME_25A0000': 0x25A0000,
+  }
+  commands.append(packer.make_can_msg('VEHICLE_STATE', 1, x300_values, idx))
+  commands.append(packer.make_can_msg('VEHICLE_STATE2', 1, x301_values, idx))
+  # commands.append(make_can_msg(0x300, msg_0x300, idx_0x300, 1))
 
-  idx_0x301 = idx_0x300 = idx
-  if car_fingerprint == CAR.CIVIC:
-    idx_offset = 0xc if new_radar_config else 0x8   # radar in civic 2018 requires 0xc
-    idx_0x300 += idx_offset
-
-  if car_fingerprint == CAR.ACCORD_2016:
-    msg_0x301 += "\x0c" #error here
-
-  commands.append(make_can_msg(0x300, msg_0x300, idx_0x300, 1))
-  print("made 0x300 ")
-  print(msg_0x300)
-  print(idx_0x300)
-  print(msg_0x301)
-  print(idx_0x301)
-  commands.append(make_can_msg(0x301, msg_0x301, idx_0x301, 1))
+  # commands.append(make_can_msg(0x301, msg_0x301, idx_0x301, 1))
   return commands
 
 def spam_buttons_command(packer, button_val, idx):
