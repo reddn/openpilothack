@@ -160,6 +160,11 @@ def create_radar_commands(v_ego, car_fingerprint, new_radar_config, idx):
     msg_0x301 += "\x0c" #error here
 
   commands.append(make_can_msg(0x300, msg_0x300, idx_0x300, 1))
+  print("made 0x300 ")
+  print(msg_0x300)
+  print(idx_0x300)
+  print(msg_0x301)
+  print(idx_0x301)
   commands.append(make_can_msg(0x301, msg_0x301, idx_0x301, 1))
   return commands
 
