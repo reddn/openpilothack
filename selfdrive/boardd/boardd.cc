@@ -479,20 +479,20 @@ void lin_send(void *s) {
 
   int err;
   uint32_t *localdataptr;
-  uint8_t  localdata[0x04];
+  uint8_t  localdata[0x05];
   localdataptr = &localdata[0];
-
+  localdata[0x00] = 2;
   zmq_msg_t msg;
   zmq_msg_init(&msg);
   err = zmq_msg_recv(&msg, s, 0);
   assert(err >= 0);  //need to send the data  ,, set baud and parity
   int sent;
-  memcpy(zmq_msg_data(&msg),&localdata[0],4);
+  memcpy(zmq_msg_data(&msg),&localdata[1],4);
   zmq_msg_close(&msg);
 
   if(localdata[0] != 0xFF){
     pthread_mutex_lock(&usb_lock);
-    err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)&localdata[0], 4, &sent, TIMEOUT);
+    err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)&localdata, 5, &sent, TIMEOUT);
     pthread_mutex_unlock(&usb_lock);
   } else {
     if(localdata[1] == 0xFF && localdata[2] == 0xFF & localdata[3] == 0xFF ) lin_send_baud_and_parity();
@@ -511,7 +511,7 @@ void lin_send(void *s) {
 void lin_send_baud_and_parity(){
   int err;
   pthread_mutex_lock(&usb_lock);
-  err = libusb_control_transfer(dev_handle, 0xc0, 0xe2, 2, 0, NULL, 0, TIMEOUT);  //5th field... 1 == even parity.
+  err = libusb_control_transfer(dev_handle, 0xc0, 0xe2, 2, 1, NULL, 0, TIMEOUT);  //5th field... 1 == even parity.
   err = libusb_control_transfer(dev_handle, 0xc0, 0xe4, 2, 0x20, NULL, 0, TIMEOUT);//0x20 = 9600bps / 300
   pthread_mutex_unlock(&usb_lock);
 }
