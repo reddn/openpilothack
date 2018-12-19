@@ -490,12 +490,13 @@ void lin_send(void *s) {
   memcpy(zmq_msg_data(&msg),&localdata[1],4);
   zmq_msg_close(&msg);
 
-  if(localdata[0] != 0xFF){
+  if(localdata[1] != 0xFF){
+    LOGW("Sending data that is not 0xFF on localdatqa[1]");
     pthread_mutex_lock(&usb_lock);
     err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)&localdata, 5, &sent, TIMEOUT);
     pthread_mutex_unlock(&usb_lock);
   } else {
-    if(localdata[1] == 0xFF && localdata[2] == 0xFF & localdata[3] == 0xFF ) lin_send_baud_and_parity();
+    if(localdata[2] == 0xFF && localdata[3] == 0xFF & localdata[4] == 0xFF ) lin_send_baud_and_parity();
   }
 
 
