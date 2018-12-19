@@ -27,9 +27,9 @@ msgs = [(address, msg_name, msg_size, sorted(msg_sigs, key=lambda s: s.name not 
 def_vals = {a: set(b) for a,b in can_dbc.def_vals.items()} #remove duplicates
 def_vals = [(address, sig) for address, sig in sorted(def_vals.iteritems())]
 
-if can_dbc.name.startswith("honda_accord_touring_2016_can"):
-  checksum_type = None
-elif can_dbc.name.startswith("honda") or can_dbc.name.startswith("acura"):
+# if can_dbc.name.startswith("honda_accord_touring_2016_can"):
+  # checksum_type = None
+if can_dbc.name.startswith("honda") or can_dbc.name.startswith("acura"):
   checksum_type = "honda"
   checksum_size = 4
 elif can_dbc.name.startswith("toyota") or can_dbc.name.startswith("lexus"):
