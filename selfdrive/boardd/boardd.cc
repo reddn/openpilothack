@@ -478,9 +478,7 @@ void *lin_send_thread(void *crap){
 void lin_send(void *s) {
 
   int err;
-  uint32_t *localdataptr;
   uint8_t  localdata[0x05];
-  localdataptr = &localdata[0];
   localdata[0x00] = 2;
   zmq_msg_t msg;
   zmq_msg_init(&msg);
