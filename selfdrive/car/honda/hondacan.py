@@ -45,7 +45,7 @@ def create_brake_command(packer, apply_brake, pcm_override, pcm_cancel_cmd, chim
     "SET_ME_0X80": 0x80,
     "BRAKE_LIGHTS": brakelights,
     "CHIME": chime,
-    "FCW": fcw << 1,  # TODO: Why are there two bits for fcw? According to dbc file the first bit should also work
+    "FCW": fcw, #tsedited # TODO: Why are there two bits for fcw? According to dbc file the first bit should also work
   }
   return packer.make_can_msg("BRAKE_COMMAND", 0, values, idx)
 
@@ -115,8 +115,12 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
       # 'SET_ME_X03': 0x03,
       # 'SET_ME_X03_2': 0x03,
       # 'SET_ME_X01': 0x01,
-    }
-    commands.append(packer.make_can_msg("ACC_HUD", 0, acc_hud_values, idx))
+      }
+      if car_fingerprint in (CAR.ACCORD_2016):
+          bus = 0
+      commands.append(packer.make_can_msg("ACC_HUD", bus, acc_hud_values, idx))
+
+
 
   lkas_hud_values = {
     # 'SET_ME_X41': 0x41,
@@ -125,7 +129,7 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
     'SOLID_LANES': hud.lanes,
     'BEEP': hud.beep,
   }
-  commands.append(packer.make_can_msg('LKAS_HUD', bus, lkas_hud_values, idx))
+  commands.append(packer.make_can_msg('LKAS_HUD', 0, lkas_hud_values, idx))
 
   if car_fingerprint in (CAR.CIVIC, CAR.ODYSSEY):
     commands.append(packer.make_can_msg('HIGHBEAM_CONTROL', 0, {'HIGHBEAMS_ON': False}, idx))

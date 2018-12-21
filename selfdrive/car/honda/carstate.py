@@ -79,15 +79,23 @@ def get_can_signals(CP):
 
   if CP.radarOffCan:
     # Civic is only bosch to use the same brake message as other hondas.
-    if CP.carFingerprint not in (CAR.ACCORDH, CAR.CIVIC_HATCH):
+    if CP.carFingerprint not in (CAR.ACCORDH, CAR.CIVIC_HATCH, CAR.ACCORD_2016):
       signals += [("BRAKE_PRESSED", "BRAKE_MODULE", 0)]
       checks += [("BRAKE_MODULE", 50)]
-    signals += [("CAR_GAS", "GAS_PEDAL_2", 0),
-                ("MAIN_ON", "SCM_FEEDBACK", 0),
-                ("EPB_STATE", "EPB_STATUS", 0),
-                ("BRAKE_HOLD_ACTIVE", "VSA_STATUS", 0),
-                ("CRUISE_SPEED", "ACC_HUD", 0)]
-    checks += [("GAS_PEDAL_2", 100)]
+    if CP.carFingerprint == CAR.ACCORD_2016:
+      signals += [("CAR_GAS", "GAS_PEDAL_2", 0),
+      ("MAIN_ON", "SCM_FEEDBACK", 0),
+      ("EPB_STATE", "EPB_STATUS", 0),
+      ("BRAKE_HOLD_ACTIVE", "VSA_STATUS", 0),
+      ("CRUISE_SPEED", "ACC_HUD", 0)]
+    else:
+      signals += #[("CAR_GAS", "GAS_PEDAL_2", 0),
+                  [("MAIN_ON", "SCM_FEEDBACK", 0),
+                  ("CRUISE_SPEED", "ACC_HUD", 0)]
+      # checks += [("GAS_PEDAL_2", 100)]
+      signals += [("CRUISE_SPEED_PCM", "CRUISE", 0),
+                  ("CRUISE_SPEED_OFFSET", "CRUISE_PARAMS", 0)]
+      checks += [("CRUISE_PARAMS", 50)]
   else:
     # Nidec signals.
     signals += [("CRUISE_SPEED_PCM", "CRUISE", 0),
@@ -248,14 +256,10 @@ class CarState(object):
     self.cruise_setting = cp.vl["SCM_BUTTONS"]['CRUISE_SETTING']
     self.cruise_buttons = cp.vl["SCM_BUTTONS"]['CRUISE_BUTTONS']
 
-    if self.CP.carFingerprint in (CAR.ACCORD_2016):
-      self.blinker_on = 0
-      self.left_blinker_on = 0
-      self.right_blinker_on = 0
-    else:
-      self.blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER'] or cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
-      self.left_blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER']
-      self.right_blinker_on = cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
+    self.left_blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER']
+    self.right_blinker_on = cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
+    # self.blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER'] or cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
+    self.blinker_on = self.left_blinker | self.right_blinker
 
     if self.CP.carFingerprint in (CAR.CIVIC, CAR.ODYSSEY, CAR.CRV_5G, CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_HATCH):
       self.park_brake = cp.vl["EPB_STATUS"]['EPB_STATE'] != 0
@@ -274,10 +278,10 @@ class CarState(object):
 
     self.pedal_gas = cp.vl["POWERTRAIN_DATA"]['PEDAL_GAS']
     # crv doesn't include cruise control
-    if self.CP.carFingerprint in (CAR.CRV, CAR.ODYSSEY, CAR.ACURA_RDX, CAR.RIDGELINE, CAR.PILOT_2019, CAR.ACCORD_2016):
+    if self.CP.carFingerprint in (CAR.CRV, CAR.ODYSSEY, CAR.ACURA_RDX, CAR.RIDGELINE, CAR.PILOT_2019):
       self.car_gas = self.pedal_gas
     else:
-      self.car_gas = cp.vl["GAS_PEDAL_2"]['CAR_GAS']
+      self.car_gas = cp.vl["GAS_PEDAL"]['CAR_GAS']
 
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
       self.steer_torque_driver = 0
@@ -291,7 +295,7 @@ class CarState(object):
     if self.CP.radarOffCan:
       self.stopped = cp.vl["ACC_HUD"]['CRUISE_SPEED'] == 252.
       self.cruise_speed_offset = calc_cruise_offset(0, self.v_ego)
-      if self.CP.carFingerprint in (CAR.CIVIC_HATCH, CAR.ACCORDH):
+      if self.CP.carFingerprint in (CAR.CIVIC_HATCH, CAR.ACCORDH, CAR.ACCORD_2016):
         self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
         self.brake_pressed = cp.vl["POWERTRAIN_DATA"]['BRAKE_PRESSED'] or \
                           (self.brake_switch and self.brake_switch_prev and \
@@ -303,7 +307,7 @@ class CarState(object):
       # On set, cruise set speed pulses between 254~255 and the set speed prev is set to avoid this.
       self.v_cruise_pcm = self.v_cruise_pcm_prev if cp.vl["ACC_HUD"]['CRUISE_SPEED'] > 160.0 else cp.vl["ACC_HUD"]['CRUISE_SPEED']
       self.v_cruise_pcm_prev = self.v_cruise_pcm
-    else:
+    else:  #radarOffCan
       self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
       self.cruise_speed_offset = calc_cruise_offset(cp.vl["CRUISE_PARAMS"]['CRUISE_SPEED_OFFSET'], self.v_ego)
       self.v_cruise_pcm = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
@@ -318,7 +322,7 @@ class CarState(object):
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
     self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
-      self.pcm_acc_status = 1
+      self.pcm_acc_status = cp.vl["ACC_HUD"]['ENABLE_MINI_CAR']
     else:
       self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
 
