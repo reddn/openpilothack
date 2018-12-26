@@ -59,6 +59,7 @@ def get_can_signals(CP):
       ("XMISSION_SPEED", "POWERTRAIN_DATA", 0),
       ("XMISSION_SPEED", "POWERTRAIN_DATA_2", 0),
       ("CAR_GAS", "GAS_PEDAL", 0),
+      ("ENABLE_MINI_CAR", "ACC_HUD", 0),
   ]
 
   checks = [
@@ -89,10 +90,8 @@ def get_can_signals(CP):
       ("BRAKE_HOLD_ACTIVE", "VSA_STATUS", 0),
       ("CRUISE_SPEED", "ACC_HUD", 0)]
     else:
-      signals += #[("CAR_GAS", "GAS_PEDAL_2", 0),
-                  [("MAIN_ON", "SCM_FEEDBACK", 0),
+      signals +=  [("MAIN_ON", "SCM_FEEDBACK", 0),
                   ("CRUISE_SPEED", "ACC_HUD", 0)]
-      # checks += [("GAS_PEDAL_2", 100)]
       signals += [("CRUISE_SPEED_PCM", "CRUISE", 0),
                   ("CRUISE_SPEED_OFFSET", "CRUISE_PARAMS", 0)]
       checks += [("CRUISE_PARAMS", 50)]
@@ -259,7 +258,7 @@ class CarState(object):
     self.left_blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER']
     self.right_blinker_on = cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
     # self.blinker_on = cp.vl["SCM_COMMANDS"]['LEFT_BLINKER'] or cp.vl["SCM_COMMANDS"]['RIGHT_BLINKER']
-    self.blinker_on = self.left_blinker | self.right_blinker
+    self.blinker_on = self.left_blinker_on or self.right_blinker_on
 
     if self.CP.carFingerprint in (CAR.CIVIC, CAR.ODYSSEY, CAR.CRV_5G, CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_HATCH):
       self.park_brake = cp.vl["EPB_STATUS"]['EPB_STATE'] != 0

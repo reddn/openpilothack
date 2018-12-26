@@ -144,8 +144,7 @@ class CarController(object):
     # Send steering command.
     if CS.CP.carFingerprint in (CAR.ACCORD_2016):
       if lkas_active:
-        chksm_on = 32
-        lkas_on = 1
+        lkas_on = 32
         lkas_off = 0
         chksm_off = 0
         big_steer = (apply_steer >> 5) & 0xF
@@ -156,8 +155,7 @@ class CarController(object):
       else:
         chksm_on = 0
         lkas_on = 0
-        lkas_off = 1
-        chksm_off = 64
+        lkas_off = 64
         big_steer = 0
         little_steer = 0
       # if apply_steer != 0:#fix this... if no apply_steer but still engaged, it needs to keep lkas_on as 1
@@ -173,20 +171,21 @@ class CarController(object):
 
       # accord serial has a 1 bit counter, flipping every refresh
       if self.counter == 0:
-        self.counter = 1
+        self.counter = 32
       else:
         self.counter = 0
 
-      chksm = 512 - ((little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)#removed idx from addition  list
+
+      chksm = ((512 - ((self.counter + little_steer +big_steer+lkas_on+lkas_off + 256) % 512)) % 256) & 0xff #removed idx from additionlist
       #can_sends.append(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
-      self.linsocket.send(bytearray(hondacan.create_steering_control_serial(self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm)))
+      self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
 #hack    else:
 #hack      idx = frame % 4
       #can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
       #above is commented bc it should not happen on this branch
 
     # Send dashboard UI commands.
-    if (frame % 10) == 0:
+    if False: #hack (frame % 10) == 0:
       idx = (frame/10) % 4  #create_ui_commands is hacked
       can_sends.extend(hondacan.create_ui_commands(self.packer, pcm_speed, hud, CS.CP.carFingerprint, idx))
 

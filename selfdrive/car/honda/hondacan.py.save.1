@@ -3,7 +3,6 @@ import struct
 import common.numpy_fast as np
 from selfdrive.config import Conversions as CV
 from selfdrive.car.honda.values import CAR, HONDA_BOSCH, VEHICLE_STATE_MSG
-from numpy import array as nparray
 
 # *** Honda specific ***
 def can_cksum(mm):
@@ -63,19 +62,17 @@ def create_gas_command(packer, gas_amount, idx):
 
   return packer.make_can_msg("GAS_COMMAND", 0, values, idx)
 
-def create_steering_control_serial(frame,counter, big_steer, lkas_on,
-little_steer, lkas_off, chksm):
-  datapack = nparray([0x00, 0x00, 0x00, 0x00], dtype='uint8')
+def create_steering_control_serial(counter, big_steer, lkas_on, little_steer, lkas_off, chksm):
+  datapack = [0x00, 0x00, 0x00, 0x00]
 # 128  64  32  16  8  4  2  1
-  datapack[0] = (big_steer + counter)
-  datapack[1] = (little_steer + lkas_on + 128)
-  datapack[2] =  (lkas_off + 128)
+  datapack[0] = big_steer
+  datapack[0] =+ counter
+  datapack[1] = little_steer
+  datapack[1] += lkas_on + 128
+  datapack[2] =  lkas_off + 128  
   datapack[3] = chksm
-  # print datapack
-  if ((frame/10) % 10) == 0:
-    print datapack
-  return datapack
-  #hack return bytearray(datapack)
+  #  print datapack
+  return bytearray(datapack)
 
   # values = {
   #   "BIG_STEER": big_steer,

@@ -136,7 +136,7 @@ class CarInterface(object):
     ret.carName = "honda"
     ret.carFingerprint = candidate
 
-    if candidate in HONDA_BOSCH:
+    if True: #candidate in HONDA_BOSCH:
       ret.safetyModel = car.CarParams.SafetyModels.hondaBosch
       ret.enableCamera = True
       ret.radarOffCan = True
@@ -146,6 +146,11 @@ class CarInterface(object):
       ret.enableGasInterceptor = 0x201 in fingerprint
     cloudlog.warn("ECU Camera Simulated: %r", ret.enableCamera)
     cloudlog.warn("ECU Gas Interceptor: %r", ret.enableGasInterceptor)
+    cloudlog.warn("radarOffCan is %r", ret.radarOffCan)
+    if candidate in HONDA_BOSCH:
+      cloudlog.warn("Caniddiant is in HONDABOSCH")
+    else:
+      cloudlog.warn("Candidant is NOTTTTT in a bosch")
 
     ret.enableCruise = not ret.enableGasInterceptor
 
@@ -232,7 +237,7 @@ class CarInterface(object):
       ret.longitudinalKpV = [1.2, 0.8, 0.5]
       ret.longitudinalKiBP = [0., 35.]
       ret.longitudinalKiV = [0.18, 0.12]
-      ret.radarOffCan = False 
+      ret.radarOffCan = False
 
     elif candidate == CAR.ACURA_ILX:
       stop_and_go = False
@@ -500,8 +505,8 @@ class CarInterface(object):
       events.append(create_event('steerUnavailable', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
     elif self.CS.steer_warning:
       events.append(create_event('steerTempUnavailable', [ET.WARNING]))
-    if self.CS.brake_error:
-      events.append(create_event('brakeUnavailable', [ET.NO_ENTRY, ET.IMMEDIATE_DISABLE, ET.PERMANENT]))
+ #   if self.CS.brake_error:
+ #     events.append(create_event('brakeUnavailable', [ET.NO_ENTRY,IMMEDIATE_DISABLE, ET.PERMANENT]))
     if not ret.gearShifter == 'drive':
       events.append(create_event('wrongGear', [ET.NO_ENTRY, ET.SOFT_DISABLE]))
     if ret.doorOpen:

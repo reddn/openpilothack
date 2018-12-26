@@ -65,6 +65,8 @@ void *pigeon_thread(void *crap);
 void lin_send(void *s);
 void *lin_send_thread(void *crap);
 void lin_send_baud_and_parity();
+uint32_t lincounter = 0;
+
 
 void *safety_setter_thread(void *s) {
   char *value;
@@ -98,6 +100,7 @@ void *safety_setter_thread(void *s) {
     break;
   case (int)cereal::CarParams::SafetyModels::HONDA:
     safety_setting = SAFETY_HONDA;
+    LOGW("setting honda safety");
     break;
   case (int)cereal::CarParams::SafetyModels::TOYOTA:
     safety_setting = SAFETY_TOYOTA;
@@ -110,6 +113,7 @@ void *safety_setter_thread(void *s) {
     break;
   case (int)cereal::CarParams::SafetyModels::HONDA_BOSCH:
     safety_setting = SAFETY_HONDA_BOSCH;
+    LOGW("setting honda BOSCH");
     break;
   case (int)cereal::CarParams::SafetyModels::FORD:
     safety_setting = SAFETY_FORD;
@@ -433,7 +437,7 @@ void *can_recv_thread(void *crap) {
   // can = 8006
   void *context = zmq_ctx_new();
   void *publisher = zmq_socket(context, ZMQ_PUB);
-  zmq_bind(publisher, "tcp://*:8006");
+  zmq_bind(publisher, "tcp://127.0.0.1:8006");
 
   // run at ~200hz
   while (!do_exit) {
@@ -478,26 +482,27 @@ void *lin_send_thread(void *crap){
 void lin_send(void *s) {
 
   int err;
-  uint8_t  localdata[0x05];
-  localdata[0x00] = 2;
+  unsigned char  localdata[0x20];
+  localdata[0x00] = 0x02;
   zmq_msg_t msg;
   zmq_msg_init(&msg);
   err = zmq_msg_recv(&msg, s, 0);
   assert(err >= 0);  //need to send the data  ,, set baud and parity
   int sent;
-  memcpy(zmq_msg_data(&msg),&localdata[1],4);
+  memcpy((unsigned char*)&localdata[1],zmq_msg_data(&msg),4);
   zmq_msg_close(&msg);
-
-  if(localdata[1] != 0xFF){
-    LOGW("Sending data that is not 0xFF on localdatqa[1]");
+  //localdata[2] = 4;
+  if(localdata[1] != 0xFF && localdata[4] != 0xFF){
+    //LOGW("Sending data that is not 0xFF on localdatqa[1]");
     pthread_mutex_lock(&usb_lock);
-    err = libusb_bulk_transfer(dev_handle, 2, (uint8_t*)&localdata, 5, &sent, TIMEOUT);
+    err = libusb_bulk_transfer(dev_handle, 2, (unsigned char*)&localdata, 5, &sent, TIMEOUT);
     pthread_mutex_unlock(&usb_lock);
   } else {
-    if(localdata[2] == 0xFF && localdata[3] == 0xFF & localdata[4] == 0xFF ) lin_send_baud_and_parity();
+    if(localdata[3] == 0xFF && localdata[2] == 0xFF && localdata[4] ==0xFF ) lin_send_baud_and_parity();
   }
-
-
+  if((lincounter++ % 50) == 0){
+    LOGW("15th run of lin_send. sent: %u - %u - %u - %u - %u - %u - %u - %u - %u",localdata[0], localdata[1], localdata[2], localdata[3], localdata[4], localdata[5], localdata[6], localdata[7], localdata[8], localdata[9]); 
+  }
 // int libusb_nsfer	(	struct libusb_device_handle * 	dev_handle,
 // unsigned char 	endpoint,
 // unsigned char * 	data,
