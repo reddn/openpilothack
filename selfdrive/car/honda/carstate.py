@@ -321,7 +321,7 @@ class CarState(object):
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
     self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
-      self.pcm_acc_status = cp.vl["ACC_HUD"]['ENABLE_MINI_CAR']
+      self.pcm_acc_status =  cp.vl["ACC_HUD"]['ENABLE_MINI_CAR']
     else:
       self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
 
