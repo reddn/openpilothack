@@ -473,7 +473,7 @@ class CarInterface(object):
       elif but == CruiseButtons.CANCEL:
         be.type = 'cancel'
       elif but == CruiseButtons.MAIN:
-        be.type = 'altButton3'
+        be.type = 'altButton3'actuators
       buttonEvents.append(be)
 
     if self.CS.cruise_setting != self.CS.prev_cruise_setting:
