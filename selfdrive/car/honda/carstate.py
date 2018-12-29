@@ -38,26 +38,26 @@ def get_can_signals(CP):
       # ("STEER_TORQUE_SENSOR", "STEER_STATUS", 0)
       # ("LEFT_BLINKER", "SCM_FEEDBACK", 0),
       # ("RIGHT_BLINKER", "SCM_FEEDBACK", 0),
-      ("LEFT_BLINKER", "SCM_COMMANDS", 0),
-      ("RIGHT_BLINKER", "SCM_COMMANDS", 0),
+      ("LEFT_BLINKER", "SCM_COMMANDS", 0),   #added for accord
+      ("RIGHT_BLINKER", "SCM_COMMANDS", 0),  #added for accord
       ("GEAR", "GEARBOX", 0),
       ("BRAKE_ERROR_1", "STANDSTILL", 1),
       ("BRAKE_ERROR_2", "STANDSTILL", 1),
       ("SEATBELT_DRIVER_LAMP", "SEATBELT_STATUS", 1),
       ("SEATBELT_DRIVER_LATCHED", "SEATBELT_STATUS", 0),
-      ("BRAKE_PRESSED", "POWERTRAIN_DATA", 0),
-      ("BRAKE_SWITCH", "POWERTRAIN_DATA", 0),
+      ("BRAKE_PRESSED", "POWERTRAIN_DATA2", 0),
+      ("BRAKE_SWITCH", "POWERTRAIN_DATA2", 0),
       ("CRUISE_BUTTONS", "SCM_BUTTONS", 0),
       ("ESP_DISABLED", "VSA_STATUS", 1),
       ("HUD_LEAD", "ACC_HUD", 0),
       ("USER_BRAKE", "VSA_STATUS", 0),
       # ("STEER_STATUS", "STEER_STATUS", 5),
       ("GEAR_SHIFTER", "GEARBOX", 0),
-      ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
+      ("PEDAL_GAS", "POWERTRAIN_DATA2", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
       # ("ACC_STATUS", "POWERTRAIN_DATA", 0),
       ("XMISSION_SPEED", "POWERTRAIN_DATA", 0),
-      ("XMISSION_SPEED", "POWERTRAIN_DATA_2", 0),
+      ("XMISSION_SPEED2", "POWERTRAIN_DATA", 0),
       ("CAR_GAS", "GAS_PEDAL", 0),
       ("ENABLE_MINI_CAR", "ACC_HUD", 0),
   ]
@@ -72,7 +72,7 @@ def get_can_signals(CP):
       ("SEATBELT_STATUS", 10),
       ("CRUISE", 10),
       ("POWERTRAIN_DATA", 100),
-      ("POWERTRAIN_DATA_2", 100),
+      ("POWERTRAIN_DATA2", 100),
       ("VSA_STATUS", 50),
       ("SCM_BUTTONS", 25),
       # ("CAR_GAS", 100),
@@ -83,12 +83,13 @@ def get_can_signals(CP):
     if CP.carFingerprint not in (CAR.ACCORDH, CAR.CIVIC_HATCH, CAR.ACCORD_2016):
       signals += [("BRAKE_PRESSED", "BRAKE_MODULE", 0)]
       checks += [("BRAKE_MODULE", 50)]
-    if CP.carFingerprint == CAR.ACCORD_2016:
-      signals += [("CAR_GAS", "GAS_PEDAL_2", 0),
-      ("MAIN_ON", "SCM_FEEDBACK", 0),
-      ("EPB_STATE", "EPB_STATUS", 0),
-      ("BRAKE_HOLD_ACTIVE", "VSA_STATUS", 0),
-      ("CRUISE_SPEED", "ACC_HUD", 0)]
+    if CP.carFingerprint in (CAR.ACCORD_2016): #hack to make 16 accord bosch
+      signals += [("CAR_GAS", "GAS_PEDAL", 0),
+      ("MAIN_ON", "SCM_BUTTONS", 0),
+      ("CRUISE_SPEED", "ACC_HUD", 0)
+      ("CRUISE_SPEED_PCM", "CRUISE", 0),
+      ("CRUISE_SPEED_OFFSET", "CRUISE_PARAMS", 0) ]
+      checks += [("CRUISE_PARAMS", 50)]
     else:
       signals +=  [("MAIN_ON", "SCM_FEEDBACK", 0),
                   ("CRUISE_SPEED", "ACC_HUD", 0)]
@@ -228,7 +229,7 @@ class CarState(object):
     # blend in transmission speed at low speed, since it has more low speed accuracy
     self.v_weight = interp(self.v_wheel, v_weight_bp, v_weight_v)
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
-      speed = (1. - self.v_weight) * cp.vl["POWERTRAIN_DATA_2"]['XMISSION_SPEED']  * speed_factor + \
+      speed = (1. - self.v_weight) * cp.vl["POWERTRAIN_DATA"]['XMISSION_SPEED']  * speed_factor + \
       self.v_weight * self.v_wheel  # Xmission speed already in m/s
     else:
       speed = (1. - self.v_weight) * cp.vl["ENGINE_DATA"]['XMISSION_SPEED'] * CV.KPH_TO_MS * speed_factor + \
@@ -271,11 +272,11 @@ class CarState(object):
 
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
       self.gear_shifter = "drive"
+      self.pedal_gas = cp.vl["POWERTRAIN_DATA2"]['PEDAL_GAS']
     else:
       can_gear_shifter = int(cp.vl["GEARBOX"]['GEAR_SHIFTER'])
       self.gear_shifter = parse_gear_shifter(can_gear_shifter, self.shifter_values)
-
-    self.pedal_gas = cp.vl["POWERTRAIN_DATA"]['PEDAL_GAS']
+      self.pedal_gas = cp.vl["POWERTRAIN_DATA"]['PEDAL_GAS']
     # crv doesn't include cruise control
     if self.CP.carFingerprint in (CAR.CRV, CAR.ODYSSEY, CAR.ACURA_RDX, CAR.RIDGELINE, CAR.PILOT_2019):
       self.car_gas = self.pedal_gas
@@ -301,6 +302,13 @@ class CarState(object):
                           cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH'] != self.brake_switch_ts)
         self.brake_switch_prev = self.brake_switch
         self.brake_switch_ts = cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH']
+      elif self.CP.carFingerprint in (CAR.ACCORD_2016):
+        self.brake_switch = cp.vl["POWERTRAIN_DATA2"]['BRAKE_SWITCH']
+        self.brake_pressed = cp.vl["POWERTRAIN_DATA2"]['BRAKE_PRESSED'] or \
+                         (self.brake_switch and self.brake_switch_prev and \  
+                         cp.ts["POWERTRAIN_DATA2"]['BRAKE_SWITCH'] != self.brake_switch_ts)
+        self.brake_switch_prev = self.brake_switch
+        self.brake_swtich_ts = cp.ts["POWERTRAIN_DATA2"]['BRAKE_SWITCH']
       else:
         self.brake_pressed = cp.vl["BRAKE_MODULE"]['BRAKE_PRESSED']
       # On set, cruise set speed pulses between 254~255 and the set speed prev is set to avoid this.

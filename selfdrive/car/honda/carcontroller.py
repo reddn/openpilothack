@@ -70,8 +70,8 @@ class CarController(object):
     self.linsocket = self.lincontext.socket(zmq.PUB)
     self.linsocket.bind("tcp://127.0.0.1:8099")
     self.linsocket.send(bytearray([0xFF,0xFF,0xFF,0xFF])) #initializes the LIN pin at 9600 with even parity
-	self.lkas_active_prev = False
-	self.lkas_signal_changed_timeout = 10 #use counts of frames at 10hz
+    self.lkas_active_prev = False
+    self.lkas_signal_changed_timeout = 10 #use counts of frames at 10hz
 
   def update(self, sendcan, enabled, CS, frame, actuators, \
              pcm_speed, pcm_override, pcm_cancel_cmd, pcm_accel, \
@@ -141,10 +141,10 @@ class CarController(object):
 
     # any other cp.vl[0x18F]['STEER_STATUS'] is common and can happen during user override. sending 0 torque to avoid EPS sending error 5
     lkas_active = enabled and not CS.steer_not_allowed
-	if lkas_active != lkas_active_prev:
-	  if lkas_active:
-	    self.lkas_signal_changed_timeout = 30
-	  else:
+    if lkas_active != lkas_active_prev:
+      if lkas_active:
+        self.lkas_signal_changed_timeout = 30
+      else:
         self.lkas_signal_changed_timeout = 50
     # Send CAN commands.
 
@@ -159,7 +159,7 @@ class CarController(object):
         big_steer = (apply_steer >> 5) & 0xF
         little_steer =  apply_steer - (big_steer << 5)
         # steer starts from 0, goes to 15, drops to -16 then up to -1
-		dashed_lanes = 0
+        dashed_lanes = 0
         if little_steer > 15:
           little_steer = little_steer - 32
       else:
@@ -168,7 +168,7 @@ class CarController(object):
         lkas_off = 64
         big_steer = 0
         little_steer = 0
-		dashed_lanes = 1
+        dashed_lanes = 1
 
       # accord serial has a 1 bit counter, flipping every refresh
       if self.counter == 0:
@@ -178,14 +178,13 @@ class CarController(object):
 
       chksm = ((512 - ((self.counter + little_steer +big_steer+lkas_on+lkas_off + 256) % 512)) % 256) & 0xff #removed idx from additionlist
 
-	  can_sends.append(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
+     # can_sends.append(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
 
       #self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
-      if ((frame/10) % 10) == 0:
-
+      if ((frame) % 50) == 0:
         can_sends.append(hondacan.create_steering_control_serial_candata(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm, apply_steer, int(clip(actuators.steer * 100,0,100))))
 
-    else:
+    else:  # for if CAR.ACCORD_2016
       idx = frame % 4
       can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
       # above is commented bc it should not happen on this branch
@@ -193,12 +192,12 @@ class CarController(object):
     # Send dashboard UI commands.
     if (frame % 10) == 0:
       idx = (frame/10) % 4  #create_ui_commands is hacked
-	  if self.lkas_signal_changed_timeout > 0:
-		signal_changed = 1
-		self.lkas_signal_changed_timeout -= 1
+      if self.lkas_signal_changed_timeout > 0:
+        signal_changed = 1
+        self.lkas_signal_changed_timeout -= 1
       else:
-		signal_changed = 0
-      can_sends.extend(hondacan.create_ui_commands(self.packer, pcm_speed, hud, CS.CP.carFingerprint, idx, dashed_lanes, signal_changed))
+        signal_changed = 0
+#      can_sends.extend(hondacan.create_ui_commands(self.packer, pcm_speed, hud, CS.CP.carFingerprint, idx, dashed_lanes, signal_changed))
 
 # #hack    if CS.CP.radarOffCan:
 #       # If using stock ACC, spam cancel command to kill gas when OP disengages.
