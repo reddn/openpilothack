@@ -141,11 +141,12 @@ class CarController(object):
 
     # any other cp.vl[0x18F]['STEER_STATUS'] is common and can happen during user override. sending 0 torque to avoid EPS sending error 5
     lkas_active = enabled and not CS.steer_not_allowed
-    if lkas_active != lkas_active_prev:
+    if lkas_active != self.lkas_active_prev:
       if lkas_active:
         self.lkas_signal_changed_timeout = 30
       else:
         self.lkas_signal_changed_timeout = 50
+    self.lkas_active_prev = lkas_active
     # Send CAN commands.
 
     can_sends = []
@@ -180,9 +181,9 @@ class CarController(object):
 
      # can_sends.append(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
 
-      #self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
-      if ((frame) % 50) == 0:
-        can_sends.append(hondacan.create_steering_control_serial_candata(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm, apply_steer, int(clip(actuators.steer * 100,0,100))))
+      self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
+ #     if ((frame) % 50) == 0:
+ #       can_sends.append(hondacan.create_steering_control_serial_candata(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm, apply_steer, int(clip(actuators.steer * 100,0,100))))
 
     else:  # for if CAR.ACCORD_2016
       idx = frame % 4
@@ -197,7 +198,7 @@ class CarController(object):
         self.lkas_signal_changed_timeout -= 1
       else:
         signal_changed = 0
-#      can_sends.extend(hondacan.create_ui_commands(self.packer, pcm_speed, hud, CS.CP.carFingerprint, idx, dashed_lanes, signal_changed))
+      can_sends.extend(hondacan.create_ui_commands(self.packer, pcm_speed, hud, CS.CP.carFingerprint, idx, dashed_lanes, signal_changed))
 
 # #hack    if CS.CP.radarOffCan:
 #       # If using stock ACC, spam cancel command to kill gas when OP disengages.

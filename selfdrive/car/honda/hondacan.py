@@ -100,7 +100,7 @@ def create_steering_control(packer, apply_steer, lkas_active, car_fingerprint, i
   return packer.make_can_msg("STEERING_CONTROL", bus, values, idx)
 
 
-def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
+def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx, dashed_lanes, signal_changed):
   """Creates an iterable of CAN messages for the UIs."""
   commands = []
   bus = 0
@@ -118,7 +118,7 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
       }
     if car_fingerprint in (CAR.ACCORD_2016):
       bus = 0
-    commands.append(packer.make_can_msg("ACC_HUD", bus, acc_hud_values, idx))
+#    commands.append(packer.make_can_msg("ACC_HUD", bus, acc_hud_values, idx))
 
 
 
@@ -128,6 +128,8 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx):
     'STEERING_REQUIRED': hud.steer_required,
     'SOLID_LANES': hud.lanes,
     'BEEP': hud.beep,
+    'DASHED_LANES': dashed_lanes,
+    'SIGNAL_CHANGED': signal_changed
   }
   commands.append(packer.make_can_msg('LKAS_HUD', 0, lkas_hud_values, idx))
 

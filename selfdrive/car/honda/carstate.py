@@ -290,7 +290,7 @@ class CarState(object):
     #   self.steer_torque_driver = cp.vl["STEER_STATUS"]['STEER_TORQUE_SENSOR']
     # self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD[self.CP.carFingerprint]
 
-    self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
+    self.brake_switch = cp.vl["POWERTRAIN_DATA2"]['BRAKE_SWITCH']
 
     if self.CP.radarOffCan:
       self.stopped = cp.vl["ACC_HUD"]['CRUISE_SPEED'] == 252.
@@ -305,7 +305,7 @@ class CarState(object):
       elif self.CP.carFingerprint in (CAR.ACCORD_2016):
         self.brake_switch = cp.vl["POWERTRAIN_DATA2"]['BRAKE_SWITCH']
         self.brake_pressed = cp.vl["POWERTRAIN_DATA2"]['BRAKE_PRESSED'] or \
-                         (self.brake_switch and self.brake_switch_prev and \  
+                         (self.brake_switch and self.brake_switch_prev and \
                          cp.ts["POWERTRAIN_DATA2"]['BRAKE_SWITCH'] != self.brake_switch_ts)
         self.brake_switch_prev = self.brake_switch
         self.brake_swtich_ts = cp.ts["POWERTRAIN_DATA2"]['BRAKE_SWITCH']
@@ -315,21 +315,21 @@ class CarState(object):
       self.v_cruise_pcm = self.v_cruise_pcm_prev if cp.vl["ACC_HUD"]['CRUISE_SPEED'] > 160.0 else cp.vl["ACC_HUD"]['CRUISE_SPEED']
       self.v_cruise_pcm_prev = self.v_cruise_pcm
     else:  #radarOffCan
-      self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
+      self.brake_switch = cp.vl["POWERTRAIN_DATA2"]['BRAKE_SWITCH']
       self.cruise_speed_offset = calc_cruise_offset(cp.vl["CRUISE_PARAMS"]['CRUISE_SPEED_OFFSET'], self.v_ego)
       self.v_cruise_pcm = cp.vl["CRUISE"]['CRUISE_SPEED_PCM']
       # brake switch has shown some single time step noise, so only considered when
       # switch is on for at least 2 consecutive CAN samples
-      self.brake_pressed = cp.vl["POWERTRAIN_DATA"]['BRAKE_PRESSED'] or \
+      self.brake_pressed = cp.vl["POWERTRAIN_DATA2"]['BRAKE_PRESSED'] or \
                          (self.brake_switch and self.brake_switch_prev and \
-                         cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH'] != self.brake_switch_ts)
+                         cp.ts["POWERTRAIN_DATA2"]['BRAKE_SWITCH'] != self.brake_switch_ts)
       self.brake_switch_prev = self.brake_switch
-      self.brake_switch_ts = cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH']
+      self.brake_switch_ts = cp.ts["POWERTRAIN_DATA2"]['BRAKE_SWITCH']
 
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
     self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
     if self.CP.carFingerprint in (CAR.ACCORD_2016):
-      self.pcm_acc_status =  cp.vl["ACC_HUD"]['ENABLE_MINI_CAR']
+      self.pcm_acc_status =  1 #hack cp.vl["ACC_HUD"]['ENABLE_MINI_CAR']
     else:
       self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
 
