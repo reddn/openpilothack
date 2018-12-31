@@ -237,7 +237,7 @@ class CarInterface(object):
       ret.longitudinalKpV = [1.2, 0.8, 0.5]
       ret.longitudinalKiBP = [0., 35.]
       ret.longitudinalKiV = [0.18, 0.12]
-      ret.radarOffCan = False
+      ret.radarOffCan = True
 
     elif candidate == CAR.ACURA_ILX:
       stop_and_go = False
