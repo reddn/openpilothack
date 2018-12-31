@@ -130,7 +130,7 @@ class CarController(object):
     elif CS.CP.carFingerprint in (CAR.CRV, CAR.ACURA_RDX):
       STEER_MAX = 0x3e8  # CR-V only uses 12-bits and requires a lower value (max value from energee)
     elif CS.CP.carFingerprint in (CAR.ACCORD_2016):
-      STEER_MAX = 0x3f
+      STEER_MAX = 0x7f
     else:
       STEER_MAX = 0x1000
 
@@ -154,7 +154,7 @@ class CarController(object):
     # Send steering command.
     if CS.CP.carFingerprint in (CAR.ACCORD_2016):
       if lkas_active:
-        lkas_on = 32
+        lkas_on = 64
         lkas_off = 0
         chksm_off = 0
         big_steer = (apply_steer >> 5) & 0xF

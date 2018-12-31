@@ -63,20 +63,16 @@ def create_gas_command(packer, gas_amount, idx):
 
   return packer.make_can_msg("GAS_COMMAND", 0, values, idx)
 
-def create_steering_control_serial(frame,counter, big_steer, lkas_on,
-little_steer, lkas_off, chksm):
+def create_steering_control_serial(frame, counter, big_steer, lkas_on, little_steer, lkas_off):
   datapack = nparray([0x00, 0x00, 0x00, 0x00], dtype='uint8')
 # 128  64  32  16  8  4  2  1
   datapack[0] = (big_steer + counter)
   datapack[1] = (little_steer + lkas_on + 128)
   datapack[2] =  (lkas_off + 128)
-  datapack[3] = chksm
-  # print datapack
-  if ((frame/10) % 10) == 0:
+  datapack[3] = create_steering_control_serial_checksum(datapack[0],datapack[1],datapack[2])
+  if (frame % 100) == 0:
     print datapack
   return datapack
-  #hack return bytearray(datapack)
-
   # values = {
   #   "BIG_STEER": big_steer,
   #   "SERIAL_COUNTER": counter,
@@ -88,7 +84,18 @@ little_steer, lkas_off, chksm):
   #   "SERIAL_CHECKSUM": chksm,
   #   }
   # return packer.make_can_msg("LKAS_SERIAL", 2, values)
+def create_steering_control_serial_checksum(a,b,c):
+  total = a + b + c
+  total = total % 512
+  total = 512 - total
+  return total % 256
 
+def create_steering_control_serial_candata(packer, counter, big_steer, lkas_on, little_steer, lkas_off, apply_steer, actuator_steer):
+  
+  return 1
+
+
+#create_steering_control_serial_candata(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm, apply_steer, int(clip(actuators.steer * 100,0,100))))
 def create_steering_control(packer, apply_steer, lkas_active, car_fingerprint, idx):
   """Creates a CAN message for the Honda DBC STEERING_CONTROL."""
   values = {
