@@ -19,6 +19,7 @@
 #include "drivers/can.h"
 #include "drivers/spi.h"
 #include "drivers/timer.h"
+#include "drivers/lin_timer.h"
 
 
 // ***************************** fan *****************************
@@ -441,6 +442,17 @@ int usb_cb_control_msg(USB_Setup_TypeDef *setup, uint8_t *resp, int hardwired) {
         }
         break;
       }
+    // **** 0xf9 enable Honda Serial data packets on L-LIN (uart 2) timed w TIM7 inturrupt 87hz sends every 11.4ms
+    case 0xf9:
+      {
+        setup_hondaSerialSteering();
+        break;
+      }
+    // 0xfa DISable honda serial steering packets timer.
+    case 0xfa:
+      {
+        stop_hondaSerialStering();
+      }
     default:
       puts("NO HANDLER ");
       puth(setup->b.bRequest);
@@ -473,6 +485,24 @@ int spi_cb_rx(uint8_t *data, int len, uint8_t *data_out) {
     case 3:
       // ep 3, send CAN
       usb_cb_ep3_out(data+4, data[2], 0);
+      break;
+    case 4: //write data to hondaSerialBuffer.. update hondaSerialBufferi and hondaSerial_lkas_active
+      hondaSerial_lkas_active = (data[1] >> 4) & 0x1;
+      if(hondaSerial_lkas_active) {
+        int8_t localbufferi;
+        
+        if(hondaSerialBufferi > -1){ //if its NOT the first data in the buffer
+          localbufferi = (hondaSerialBufferi + 0x02 ) & 0x07;
+          hondaSerialBuffer[localbufferi] = data[4];
+          hondaSerialBuffer[localbufferi+1] = data[5];
+          hondaSerialBufferi = localbufferi;
+        } else{  //its this data should be put in the front of the buffer (front is index of buffer array )
+          hondaSerialBufferLastSenti = -1;
+          hondaSerialBuffer[0] = data[4];
+          hondaSerialBuffer[1] = data[5];
+          hondaSerialBufferi = 0x00;
+        }
+      } else hondaSerialBufferLastSenti = -1;
       break;
   }
   return resp_len;

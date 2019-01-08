@@ -1,0 +1,23 @@
+def chksm(counter, little_steer, big_steer, chksm_on, chksm_off, lkas_on, lkas_off):
+
+  a = counter + little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256
+  a = a % 512
+  b = 512 - a
+  return b
+
+
+def chksmadd(a,b,c):
+  total = a + b + c
+  totalz = total % 256
+  return totalz
+
+
+
+
+chksm = 512 - ((self.counter, little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)
+
+chksm = 512 - ((idx + little_steer + big_steer + chksm_on + chksm_off + lkas_on + lkas_off + 256) % 512)
+
+
+//edit usb call back to add #4 for putting the data in the hondaSerialBuffer and updateding the hondaSerialBufferLastSenti
+//also check data to change lkas_active flag 

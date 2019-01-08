@@ -162,6 +162,18 @@ static int honda_bosch_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
   return -1;
 }
 
+static int honda_serial_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
+  if (bus_num == 0) {
+    int addr = to_fwd->RIR>>21;
+    return addr != 0xE4 && addr != 0x33D ? (uint8_t)(0x02) : -1;
+  }
+  if (bus_num == 2) {
+    int addr = to_fwd->RIR>>21;
+    return addr != 0xE4 && addr != 0x33D ? (uint8_t)(0x00) : -1;
+  }
+  return -1;
+}
+
 const safety_hooks honda_bosch_hooks = {
   .init = honda_bosch_init,
   .rx = honda_rx_hook,
@@ -170,3 +182,12 @@ const safety_hooks honda_bosch_hooks = {
   .ignition = default_ign_hook,
   .fwd = honda_bosch_fwd_hook,
 };
+
+// const safety_hooks honda_bosch_hooks = {
+//   .init = honda_bosch_init,
+//   .rx = honda_rx_hook,
+//   .tx = honda_tx_hook,
+//   .tx_lin = alloutput_tx_lin_hook,
+//   .ignition = default_ign_hook,
+//   .fwd = honda_serial_fwd_hook,
+// };
