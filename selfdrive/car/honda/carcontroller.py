@@ -177,11 +177,9 @@ class CarController(object):
       else:
         self.counter = 0
 
-      chksm = ((512 - ((self.counter + little_steer +big_steer+lkas_on+lkas_off + 256) % 512)) % 256) & 0xff #removed idx from additionlist
-
      # can_sends.append(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
 
-      self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
+      self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off))
  #     if ((frame) % 50) == 0:
  #       can_sends.append(hondacan.create_steering_control_serial_candata(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm, apply_steer, int(clip(actuators.steer * 100,0,100))))
 
