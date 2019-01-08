@@ -500,9 +500,9 @@ void lin_send(void *s) {
   } else {
     if(localdata[3] == 0xFF && localdata[2] == 0xFF && localdata[4] ==0xFF ) lin_send_baud_and_parity();
   }
-  if((lincounter++ % 50) == 0){
-    LOGW("15th run of lin_send. sent: %u - %u - %u - %u - %u - %u - %u - %u - %u",localdata[0], localdata[1], localdata[2], localdata[3], localdata[4], localdata[5], localdata[6], localdata[7], localdata[8], localdata[9]); 
-  }
+  // if((lincounter++ % 50) == 0){
+  //   LOGW("15th run of lin_send. sent: %u - %u - %u - %u - %u - %u - %u - %u - %u",localdata[0], localdata[1], localdata[2], localdata[3], localdata[4], localdata[5], localdata[6], localdata[7], localdata[8], localdata[9]);
+  // }
 // int libusb_nsfer	(	struct libusb_device_handle * 	dev_handle,
 // unsigned char 	endpoint,
 // unsigned char * 	data,
