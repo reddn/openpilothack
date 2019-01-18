@@ -92,7 +92,7 @@ class CarController(object):
     #   pcm_cancel_cmd = True
 
     # *** rate limit after the enable check ***
-    # self.brake_last = rate_limit(brake, self.brake_last, -2., 1./100) #hacked
+    self.brake_last = rate_limit(brake, self.brake_last, -2., 1./100) #hacked
 
     # vehicle hud display, wait for one update from 10Hz 0x304 msg
     if hud_show_lanes:
@@ -178,8 +178,9 @@ class CarController(object):
         self.counter = 0
 
      # can_sends.append(hondacan.create_steering_control_serial(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm))
+      self.linsocket.send(hondacan.create_steering_control_serial_lin2linrepeater(big_steer, lkas_on, little_steer))
+      # self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off))
 
-      self.linsocket.send(hondacan.create_steering_control_serial(frame, self.counter, big_steer, lkas_on, little_steer, lkas_off))
  #     if ((frame) % 50) == 0:
  #       can_sends.append(hondacan.create_steering_control_serial_candata(self.packer, self.counter, big_steer, lkas_on, little_steer, lkas_off, chksm, apply_steer, int(clip(actuators.steer * 100,0,100))))
 

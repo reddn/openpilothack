@@ -445,12 +445,14 @@ int usb_cb_control_msg(USB_Setup_TypeDef *setup, uint8_t *resp, int hardwired) {
     // **** 0xf9 enable Honda Serial data packets on L-LIN (uart 2) timed w TIM7 inturrupt 87hz sends every 11.4ms
     case 0xf9:
       {
+        puts("called 0xf9  setup_hondaSerialSteering\n");
         setup_hondaSerialSteering();
         break;
       }
     // 0xfa DISable honda serial steering packets timer.
     case 0xfa:
       {
+        
         stop_hondaSerialStering();
       }
     default:
@@ -490,7 +492,7 @@ int spi_cb_rx(uint8_t *data, int len, uint8_t *data_out) {
       hondaSerial_lkas_active = (data[1] >> 4) & 0x1;
       if(hondaSerial_lkas_active) {
         int8_t localbufferi;
-        
+
         if(hondaSerialBufferi > -1){ //if its NOT the first data in the buffer
           localbufferi = (hondaSerialBufferi + 0x02 ) & 0x07;
           hondaSerialBuffer[localbufferi] = data[4];
