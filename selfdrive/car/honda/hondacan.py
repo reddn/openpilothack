@@ -82,7 +82,7 @@ def create_steering_control_serial_lin2linrepeater(frame, big_steer, lkas_on, li
   thislkas = lkas_on << 5
   datapack[0] = big_steer | 0x40 | thislkas
   datapack[1] = little_steer | 0x80 | thislkas
-  if (frame % 300) == 0:
+  if (frame % 301) == 0:
     print datapack
   return bytearray(datapack)
 
