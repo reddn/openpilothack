@@ -105,7 +105,7 @@ FINGERPRINTS = {
 DBC = {
   CAR.ACCORD: dbc_dict('honda_accord_s2t_2018_can_generated', None),
   CAR.ACCORD_15: dbc_dict('honda_accord_lx15t_2018_can_generated', None),
-  CAR.ACCORDH: dbc_dict('honda_accord_s2t_2018_can_generated', None),  
+  CAR.ACCORDH: dbc_dict('honda_accord_s2t_2018_can_generated', None),
   CAR.ACCORD_2016:dbc_dict('honda_accord_touring_2016_can','acura_ilx_2016_nidec'),
   CAR.ACURA_ILX: dbc_dict('acura_ilx_2016_can_generated', 'acura_ilx_2016_nidec'),
   CAR.ACURA_RDX: dbc_dict('acura_rdx_2018_can_generated', 'acura_ilx_2016_nidec'),
@@ -165,8 +165,8 @@ VEHICLE_STATE_MSG = {
   CAR.PILOT: "\x00\x00\x56\x02\x58\x00\x00",
   CAR.PILOT_2019: "\x00\x00\x58\x02\x5c\x00\x00",
   CAR.RIDGELINE: "\x00\x00\x56\x02\x57\x00\x00",
-  
+
 }
 
 # TODO: get these from dbc file
-HONDA_BOSCH = [CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_HATCH,CAR.CRV_5G, CAR.ACCORD_2016]
+HONDA_BOSCH = [CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_HATCH,CAR.CRV_5G]
