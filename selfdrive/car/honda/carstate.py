@@ -45,19 +45,19 @@ def get_can_signals(CP):
       ("BRAKE_ERROR_2", "STANDSTILL", 1),
       ("SEATBELT_DRIVER_LAMP", "SEATBELT_STATUS", 1),
       ("SEATBELT_DRIVER_LATCHED", "SEATBELT_STATUS", 0),
-      ("BRAKE_PRESSED", "POWERTRAIN_DATA2", 0),
-      ("BRAKE_SWITCH", "POWERTRAIN_DATA2", 0),
+      ("BRAKE_PRESSED", "POWERTRAIN_DATA", 0),
+      ("BRAKE_SWITCH", "POWERTRAIN_DATA", 0),
       ("CRUISE_BUTTONS", "SCM_BUTTONS", 0),
       ("ESP_DISABLED", "VSA_STATUS", 1),
       ("HUD_LEAD", "ACC_HUD", 0),
       ("USER_BRAKE", "VSA_STATUS", 0),
       # ("STEER_STATUS", "STEER_STATUS", 5),
       ("GEAR_SHIFTER", "GEARBOX", 0),
-      ("PEDAL_GAS", "POWERTRAIN_DATA2", 0),
+      ("PEDAL_GAS", "POWERTRAIN_DATA", 0),
       ("CRUISE_SETTING", "SCM_BUTTONS", 0),
       # ("ACC_STATUS", "POWERTRAIN_DATA", 0),
-      ("XMISSION_SPEED", "POWERTRAIN_DATA", 0),
-      ("XMISSION_SPEED2", "POWERTRAIN_DATA", 0),
+      ("XMISSION_SPEED", "POWERTRAIN_DATA_2", 0),
+      ("XMISSION_SPEED2", "POWERTRAIN_DATA_2", 0),
       ("CAR_GAS", "GAS_PEDAL", 0),
       ("ENABLE_MINI_CAR", "ACC_HUD", 0),
   ]
@@ -86,7 +86,7 @@ def get_can_signals(CP):
     if CP.carFingerprint in (CAR.ACCORD_2016): #hack to make 16 accord bosch
       signals += [("CAR_GAS", "GAS_PEDAL", 0),
       ("MAIN_ON", "SCM_BUTTONS", 0),
-      ("CRUISE_SPEED", "ACC_HUD", 0)
+      ("CRUISE_SPEED", "ACC_HUD", 0),
       ("CRUISE_SPEED_PCM", "CRUISE", 0),
       ("CRUISE_SPEED_OFFSET", "CRUISE_PARAMS", 0) ]
       checks += [("CRUISE_PARAMS", 50)]
@@ -295,7 +295,7 @@ class CarState(object):
     if self.CP.radarOffCan:
       self.stopped = cp.vl["ACC_HUD"]['CRUISE_SPEED'] == 252.
       self.cruise_speed_offset = calc_cruise_offset(0, self.v_ego)
-      if self.CP.carFingerprint in (CAR.CIVIC_HATCH, CAR.ACCORDH, CAR.ACCORD_2016):
+      if self.CP.carFingerprint in (CAR.CIVIC_HATCH, CAR.ACCORDH):
         self.brake_switch = cp.vl["POWERTRAIN_DATA"]['BRAKE_SWITCH']
         self.brake_pressed = cp.vl["POWERTRAIN_DATA"]['BRAKE_PRESSED'] or \
                           (self.brake_switch and self.brake_switch_prev and \

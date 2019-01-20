@@ -76,7 +76,7 @@ def create_steering_control_serial(frame, counter, big_steer, lkas_on, little_st
     print datapack
   return datapack
 
-def create_steering_control_serial_lin2linrepeater(big_steer, lkas_on, little_steer):
+def create_steering_control_serial_lin2linrepeater(frame, big_steer, lkas_on, little_steer):
   datapack = [0x00,0x00,0x00,0x00]
 # 128  64  32  16  8  4  2  1
   thislkas = lkas_on << 5
