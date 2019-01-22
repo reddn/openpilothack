@@ -137,7 +137,7 @@ def create_ui_commands(packer, pcm_speed, hud, car_fingerprint, idx, dashed_lane
       }
     if car_fingerprint in (CAR.ACCORD_2016):
       bus = 0
-#    commands.append(packer.make_can_msg("ACC_HUD", bus, acc_hud_values, idx))
+  commands.append(packer.make_can_msg("ACC_HUD", bus, acc_hud_values, idx))
 
 
 
